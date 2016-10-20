@@ -5,7 +5,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-
+//zhang
 public class MainActivity extends BaseActivity {
     private static final String TAG="MainActivity";
     @Override
