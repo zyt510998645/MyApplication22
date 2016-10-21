@@ -10,6 +10,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.SystemClock;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.View;
@@ -41,12 +42,14 @@ public class SendActivity extends BaseActivity {
     private TextView positionTextView2;//add 10/20
     private LocationManager locationManager;
     private String provider;
+    private String endresult;
     //private Location location2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.send);
+        LogUtil.d(TAG,"onCreate SendActivity");
         Button button=(Button) findViewById(R.id.send);  //add 1019
         positionTextView2 = (TextView) findViewById(R.id.position_text_view2);//add 10/20
         positionTextView = (TextView) findViewById(R.id.position_text_view);
@@ -69,16 +72,19 @@ public class SendActivity extends BaseActivity {
             return;
         }
         Location location = locationManager.getLastKnownLocation(provider);
-
+        LogUtil.d(TAG,"getLastKnownLocation");
         if (location != null) {
             //显示当前设备的位置信息
             showLocation(location);
             showshowLocation(location);  //add 10/20
             LogUtil.d(TAG,"showLocation(location)");
+        } else {
+            LogUtil.e(TAG,"location is null!");
         }
-        locationManager.requestLocationUpdates(provider, 5000, 1, locationListener);
+        locationManager.requestLocationUpdates(provider, 2000, 1, locationListener);
     }
 
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         if (locationManager != null) {
@@ -94,7 +100,7 @@ public class SendActivity extends BaseActivity {
                 return;
             }
             locationManager.removeUpdates(locationListener);
-            LogUtil.d(TAG,"+removeUpdates");
+            LogUtil.d(TAG,"onDestroy:SendActivity");
         }
     }
 
@@ -103,8 +109,6 @@ public class SendActivity extends BaseActivity {
         @Override
         public void onStatusChanged(String provider, int status, Bundle extras) {
             LogUtil.d(TAG,"onStatusChanged");
-            showLocation(location11);
-            showshowLocation(location11); //add 10/20
         }
 
         @Override
@@ -128,7 +132,9 @@ public class SendActivity extends BaseActivity {
 
     private void showLocation(Location location){
         String currentPosition ="latitude is "+ location.getLatitude() + "\n" + "longitude is " + location.getLongitude();
-        positionTextView.setText(currentPosition);
+        //positionTextView2.setText(currentPosition);   //提前显示经纬度
+        LogUtil.d(TAG,currentPosition);
+        endresult = currentPosition;
         LogUtil.d(TAG,"ShowPosition");
     }
     //add 10/20
@@ -149,31 +155,31 @@ public class SendActivity extends BaseActivity {
                     HttpGet httpGet=new HttpGet(url.toString());
                     //在请求消息中指定语言，保证服务器返回中文数据
                     httpGet.addHeader("Accept-language","zh-CN");
-                    LogUtil.d(TAG,"333");
+                    LogUtil.d(TAG,"Had send URL");
                     HttpResponse httpResponse= httpClient.execute(httpGet);
-                    LogUtil.d(TAG,"33333333333");
-                    LogUtil.d(TAG,"zhang"+httpResponse.getStatusLine().getStatusCode());
+                    LogUtil.d(TAG,"Get httpResponse");
+                    LogUtil.d(TAG,"Check httpResponse.getStatusLine().getStatusCode()="+httpResponse.getStatusLine().getStatusCode());
                     if(httpResponse.getStatusLine().getStatusCode()==200){
-                        LogUtil.d(TAG,"4444");
+                        LogUtil.d(TAG,"Get httpResponse result");
                         HttpEntity entity= httpResponse.getEntity();
                         String response= EntityUtils.toString(entity,"utf-8");
                         JSONObject jsonObject=new JSONObject(response);
                         //获取results节点下的位置信息
                         JSONArray resultArray=jsonObject.getJSONArray("results");
-                        LogUtil.d(TAG,"44444444444");
+                        LogUtil.d(TAG,"try to get GEO results");
                         if (resultArray.length() > 0){
-                            LogUtil.d(TAG,"55555555555");
+                            LogUtil.d(TAG,"Get GEO results");
                             JSONObject subObject =resultArray.getJSONObject(0);
                             //取出格式化后的位置信息
                             String address = subObject.getString("formatted_address");
                             Message message=new Message();
                             message.what = SHOW_LOCATION;
                             message.obj = address;
+                            LogUtil.d(TAG,"SendMessage to handler....."+ SystemClock.uptimeMillis());
                             SendActivity.this.handler.sendMessage(message);
-                            LogUtil.d(TAG,"had sendMessage to handler!!!!!!!!!");
                         }
                     } else {
-                        LogUtil.e(TAG, "cannot !!!!!!!!!!!!");
+                        LogUtil.e(TAG, "Cannot get httpResponse result");
                     }
                 } catch (Exception e){
                     e.printStackTrace();
@@ -186,8 +192,10 @@ public class SendActivity extends BaseActivity {
       public void handleMessage(Message msg){
           switch (msg.what){
               case SHOW_LOCATION:
+                  LogUtil.d(TAG,"SendMessage "+ SystemClock.uptimeMillis());
                   String currentPosition = (String) msg.obj;
-                  positionTextView2.setText(currentPosition);
+                  positionTextView.setText(endresult+"\n"+currentPosition);
+                  LogUtil.d(TAG, "Show the GEO results to TextView"+currentPosition+endresult);
                   break;
               default:
                   break;

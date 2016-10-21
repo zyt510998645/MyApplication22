@@ -12,7 +12,7 @@ public class BaseActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle saveInstanceState){
         super.onCreate(saveInstanceState);
-        LogUtil.d("BaseActivity",getClass().getSimpleName()+ "    zhangyt");
+        LogUtil.d("BaseActivity","Goto :"+getClass().getSimpleName());
         ActivityCollector.addActivity(this);
     }
 
