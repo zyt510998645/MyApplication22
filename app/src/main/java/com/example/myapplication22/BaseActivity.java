@@ -8,7 +8,7 @@ import android.util.Log;
 /**
  * Created by 51099 on 2016/10/16.
  */
-public class BaseActivity extends AppCompatActivity {
+public class BaseActivity extends Activity {
     @Override
     protected void onCreate(Bundle saveInstanceState){
         super.onCreate(saveInstanceState);
