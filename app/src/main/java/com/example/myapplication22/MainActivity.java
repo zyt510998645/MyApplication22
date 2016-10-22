@@ -21,6 +21,7 @@ public class MainActivity extends BaseActivity {
         Button button4=(Button) findViewById(R.id.button4);
         Button button5=(Button) findViewById(R.id.button5);
         Button button6=(Button) findViewById(R.id.button6);
+        Button button7=(Button) findViewById(R.id.button7);
 
         button1.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -61,6 +62,13 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 Intent intent=new Intent(MainActivity.this,Web2Activity.class);
+                startActivity(intent);
+            }
+        });
+        button7.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(MainActivity.this,CameraActivity.class);
                 startActivity(intent);
             }
         });

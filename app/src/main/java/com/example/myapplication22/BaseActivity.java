@@ -20,5 +20,6 @@ public class BaseActivity extends Activity {
     protected void onDestroy(){
         super.onDestroy();
         ActivityCollector.removeActivity(this);
+        LogUtil.d("BaseActivity","Destroy :"+getClass().getSimpleName());
     }
 }

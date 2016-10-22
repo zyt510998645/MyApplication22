@@ -65,6 +65,10 @@
             android:name=".Web2Activity">
         </activity>
 
+        <activity
+            android:name=".CameraActivity">
+        </activity>
+
     </application>
 
 
