@@ -9,7 +9,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Environment;
 import android.preference.DialogPreference;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -20,8 +22,11 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -36,15 +41,46 @@ public class DialogActivity extends BaseActivity {
     private AudioChangeReceiver audioChangeReceiver;
     private AudioManager mAudioManager;
     //广播监听2
+    //for mp3
+    private Button play;
+    private Button pause;
+    private Button stop;
+    private MediaPlayer mediaPlayer=new MediaPlayer();
+
+    //for mp3
     public static final String TAG="DialogActivity";
-    private  ProgressBar progressBar;
+    private  SeekBar progressBar;
     private ImageView imageview;
     private SeekBar seekbar;
-
+    private TextView mustime;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.dialog_layout);
+        //for mp3
+        mustime = (TextView)findViewById(R.id.shichang);
+        play = (Button)findViewById(R.id.button1);
+        pause = (Button)findViewById(R.id.button2);
+        stop = (Button)findViewById(R.id.button3);
+//        play.setOnClickListener((View.OnClickListener) this);
+//        pause.setOnClickListener((View.OnClickListener) this);
+//        stop.setOnClickListener((View.OnClickListener) this);
+        initMediaPlayer();//初始化MediaPlayer
+        new Thread(){
+            public void run(){
+                while (true) {
+                    try {
+                        Thread.sleep(500);
+                    } catch (Exception e){
+                        e.printStackTrace();
+                    }
+                    if(mediaPlayer.isPlaying()) {
+                        progressBar.setProgress((mediaPlayer.getCurrentPosition() * 100 / mediaPlayer.getDuration()));
+                    }
+                }
+            }
+        }.start();
+        //for mp3
         //广播监听1
         intentFilter1 = new IntentFilter();
         intentFilter1.addAction("android.media.VOLUME_CHANGED_ACTION");
@@ -54,10 +90,8 @@ public class DialogActivity extends BaseActivity {
         Button button4= (Button)findViewById(R.id.button4);
         Button button5=(Button)findViewById(R.id.button5);
         Button button6=(Button)findViewById(R.id.button6);
-
         imageview =(ImageView)findViewById(R.id.imageView);
-
-        progressBar=(ProgressBar)findViewById(R.id.progress_bar);
+        progressBar=(SeekBar) findViewById(R.id.progress_bar);
         seekbar=(SeekBar) findViewById(R.id.seekBar);
         mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);//实例化音频服务
         seekbar.setProgress(mAudioManager.getStreamVolume( AudioManager.STREAM_MUSIC )*5/3);  //将系统媒体音量写入条框seekbar
@@ -94,10 +128,6 @@ public class DialogActivity extends BaseActivity {
                 int progress1= seekbar.getProgress();
                 progress1=progress1+5;
                 seekbar.setProgress(progress1);
-
-                int progress= progressBar.getProgress();
-                progress=progress+5;
-                progressBar.setProgress(progress1);
             }
         });
 
@@ -137,12 +167,66 @@ public class DialogActivity extends BaseActivity {
                 progressDialog.show();
             }
         });
-
+        progressBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+            }
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                mediaPlayer.seekTo(progressBar.getProgress()*(mediaPlayer.getDuration()/100));
+                //mediaPlayer.start();
+            }
+        });
+        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                mediaPlayer.start();
+                mediaPlayer.setLooping(true);
+            }
+        });
+        play.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LogUtil.d(TAG,"Music play");
+                if(!mediaPlayer.isPlaying()){
+                    mediaPlayer.start();
+                }
+            }
+        });
+        pause.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LogUtil.d(TAG," Music pause");
+                if(mediaPlayer.isPlaying()){
+                    mediaPlayer.pause();
+                }
+            }
+        });
+        stop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LogUtil.d(TAG,"Music stop");
+                if(mediaPlayer.isPlaying()){
+                    mediaPlayer.reset();
+                    initMediaPlayer();
+                }
+            }
+        });
     }
     //广播监听1
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        //for mp3
+        if(mediaPlayer != null){
+            //mediaPlayer.stop();
+            //mediaPlayer.release();
+            LogUtil.d(TAG,"return MainActivity");
+        }
+        //for mp3
         unregisterReceiver(audioChangeReceiver);
     }
     class AudioChangeReceiver extends BroadcastReceiver {
@@ -162,4 +246,17 @@ public class DialogActivity extends BaseActivity {
         }
     }
     //广播监听2
+    //for mp3
+    private void initMediaPlayer(){
+        try {
+            File file = new File(Environment.getExternalStorageDirectory(),"music.mp3");
+            mediaPlayer.setDataSource(file.getPath());//制定音频文件的路径
+            mediaPlayer.prepare();//让MediaPlayer进入准备状态
+            LogUtil.d(TAG,"时长"+mediaPlayer.getDuration()/1000);
+            mustime.setText("AT:"+(mediaPlayer.getDuration()/1000)+"s");
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+    //for mp3
 }

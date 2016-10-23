@@ -11,27 +11,26 @@
         android:id="@+id/textView2"
         android:layout_gravity="center_horizontal"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_toEndOf="@+id/yinyue" />
 
-    <ProgressBar
+    <SeekBar
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/progress_bar"
         android:layout_gravity="center_horizontal"
         android:layout_centerVertical="true"
-        android:layout_alignParentStart="true"
         android:max="100"
-        android:background="#11dd11" />
+        android:background="#11dd11"
+        android:layout_toEndOf="@+id/yinyue" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Button4"
+        android:text="加音量"
         android:id="@+id/button4"
-        android:layout_below="@+id/progress_bar"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="79dp" />
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true" />
 
     <SeekBar
         android:layout_width="match_parent"
@@ -46,11 +45,10 @@
         style="?android:attr/buttonStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Button5"
+        android:text="选择图片"
         android:id="@+id/button5"
-        android:layout_below="@+id/button4"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="34dp" />
+        android:layout_alignParentBottom="true"
+        android:layout_alignEnd="@+id/seekBar" />
 
     <ImageView
         android:layout_width="wrap_content"
@@ -64,7 +62,7 @@
         android:layout_height="wrap_content"
         android:text="ProgressDialog"
         android:id="@+id/button6"
-        android:layout_above="@+id/button5"
+        android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true" />
 
     <TextView
@@ -75,4 +73,47 @@
         android:id="@+id/yinyue"
         android:layout_alignTop="@+id/seekBar"
         android:layout_alignParentStart="true" />
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="播放"
+        android:id="@+id/button1"
+        android:layout_marginBottom="20dp"
+        android:layout_above="@+id/button6"
+        android:layout_alignParentStart="true"
+        android:layout_toStartOf="@+id/seekBar"
+        android:background="#0bab0b"
+        android:clickable="false"
+        android:focusable="false" />
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="暂停"
+        android:id="@+id/button2"
+        android:layout_alignTop="@+id/button1"
+        android:layout_toEndOf="@+id/button1"
+        android:background="#cfc20b" />
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="停止"
+        android:id="@+id/button3"
+        android:layout_alignTop="@+id/button2"
+        android:layout_toEndOf="@+id/button2"
+        android:background="#c51313" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:id="@+id/shichang"
+        android:layout_alignTop="@+id/progress_bar"
+        android:layout_alignParentStart="true" />
+
 </RelativeLayout>
