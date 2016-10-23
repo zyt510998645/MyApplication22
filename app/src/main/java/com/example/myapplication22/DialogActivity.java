@@ -42,6 +42,7 @@ public class DialogActivity extends BaseActivity {
     private AudioManager mAudioManager;
     //广播监听2
     //for mp3
+    public static boolean run=true;
     private Button play;
     private Button pause;
     private Button stop;
@@ -58,6 +59,7 @@ public class DialogActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.dialog_layout);
         //for mp3
+        initMediaPlayer();//初始化MediaPlayer
         mustime = (TextView)findViewById(R.id.shichang);
         play = (Button)findViewById(R.id.button1);
         pause = (Button)findViewById(R.id.button2);
@@ -65,10 +67,10 @@ public class DialogActivity extends BaseActivity {
 //        play.setOnClickListener((View.OnClickListener) this);
 //        pause.setOnClickListener((View.OnClickListener) this);
 //        stop.setOnClickListener((View.OnClickListener) this);
-        initMediaPlayer();//初始化MediaPlayer
+        run=true;
         new Thread(){
             public void run(){
-                while (true) {
+                while (run) {
                     try {
                         Thread.sleep(500);
                     } catch (Exception e){
@@ -77,6 +79,7 @@ public class DialogActivity extends BaseActivity {
                     if(mediaPlayer.isPlaying()) {
                         progressBar.setProgress((mediaPlayer.getCurrentPosition() * 100 / mediaPlayer.getDuration()));
                     }
+                    LogUtil.e(TAG,""+run);
                 }
             }
         }.start();
@@ -209,21 +212,21 @@ public class DialogActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 LogUtil.d(TAG,"Music stop");
-                if(mediaPlayer.isPlaying()){
-                    mediaPlayer.reset();
-                    initMediaPlayer();
-                }
+                mediaPlayer.reset();
+                initMediaPlayer();
             }
         });
     }
     //广播监听1
     @Override
     protected void onDestroy() {
+          DialogActivity.run=false;
+          mediaPlayer.stop();
+//        mediaPlayer.release();
+//        mediaPlayer = null;
         super.onDestroy();
         //for mp3
         if(mediaPlayer != null){
-            //mediaPlayer.stop();
-            //mediaPlayer.release();
             LogUtil.d(TAG,"return MainActivity");
         }
         //for mp3
