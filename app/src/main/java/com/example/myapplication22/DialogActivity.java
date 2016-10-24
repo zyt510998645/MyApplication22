@@ -1,7 +1,5 @@
 package com.example.myapplication22;
 
-import android.app.Activity;
-import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -12,23 +10,14 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Environment;
-import android.preference.DialogPreference;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
-import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * Created by 51099 on 2016/10/16.
@@ -59,20 +48,21 @@ public class DialogActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.dialog_layout);
         //for mp3
-        initMediaPlayer();//初始化MediaPlayer
         mustime = (TextView)findViewById(R.id.shichang);
         play = (Button)findViewById(R.id.button1);
         pause = (Button)findViewById(R.id.button2);
         stop = (Button)findViewById(R.id.button3);
+        initMediaPlayer();//初始化MediaPlayer
 //        play.setOnClickListener((View.OnClickListener) this);
 //        pause.setOnClickListener((View.OnClickListener) this);
 //        stop.setOnClickListener((View.OnClickListener) this);
         run=true;
-        new Thread(){
+        new Thread(new Runnable() {
+            @Override
             public void run(){
                 while (run) {
                     try {
-                        Thread.sleep(500);
+                        Thread.sleep(1000);
                     } catch (Exception e){
                         e.printStackTrace();
                     }
@@ -82,7 +72,7 @@ public class DialogActivity extends BaseActivity {
                     LogUtil.e(TAG,""+run);
                 }
             }
-        }.start();
+        }).start();
         //for mp3
         //广播监听1
         intentFilter1 = new IntentFilter();
@@ -94,8 +84,8 @@ public class DialogActivity extends BaseActivity {
         Button button5=(Button)findViewById(R.id.button5);
         Button button6=(Button)findViewById(R.id.button6);
         imageview =(ImageView)findViewById(R.id.imageView);
-        progressBar=(SeekBar) findViewById(R.id.progress_bar);
-        seekbar=(SeekBar) findViewById(R.id.seekBar);
+        progressBar=(SeekBar) findViewById(R.id.seekBar);
+        seekbar=(SeekBar) findViewById(R.id.progress_bar);
         mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);//实例化音频服务
         seekbar.setProgress(mAudioManager.getStreamVolume( AudioManager.STREAM_MUSIC )*5/3);  //将系统媒体音量写入条框seekbar
 
